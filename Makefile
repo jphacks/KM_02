@@ -38,14 +38,6 @@ else ifeq ($(OS), MINGW64_NT-6.1)
 	OPENCV_LIB = `pkg-config --libs opencv_static`
 endif
 
-default:
-	@echo $(OS)
-	@echo $(CXX)
-	@echo $(OPENCV_INC)
-	@echo $(OPENCV_LIB)
-	@echo $(OPENSSL_LIB)
-	@echo $(ICONV_LIB)
-
 # dummy target
 .PHONY : release debug all clean
 
@@ -53,7 +45,7 @@ default:
 release: CXX += -O2
 # release: STATICFLAG = -static
 release: CXXFLAGS = -I./$(HEADER_DIR) $(OPENCV_INC) `pkg-config --cflags jsoncpp`
-release: LDFLAGS  = $(OPENCV_LIB) $(OPENSSL_LIB) `pkg-config --libs oauth` `pkg-config --libs jsoncpp` $(ICONV_LIB)
+release: LDFLAGS  = -L./ -ltwicppspp $(OPENCV_LIB) $(OPENSSL_LIB) `pkg-config --libs oauth` `pkg-config --libs jsoncpp` $(ICONV_LIB)
 release: all
 
 # debug
@@ -63,10 +55,8 @@ debug: all
 # all
 all: $(TARGET)
 $(TARGET): $(OBJS)
-	@mkdir -p $(LIB_OUT_DIR)
-#	@mkdir -p $(PROGRAM_DIR)
-	ar r $(LIB_OUT_DIR)/lib$@.a $^
-#	$(CXX) $(STATICFLAG) $^ $(LDFLAGS) -o $(PROGRAM_DIR)/$@
+	@mkdir -p $(PROGRAM_DIR)
+	$(CXX) $(STATICFLAG) $^ $(LDFLAGS) -o $(PROGRAM_DIR)/$@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)

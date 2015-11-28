@@ -13,6 +13,7 @@
 
 #include "sequentialCalcOptFlow.h"
 #include "sequentialCaptCurrBuffer.h"
+#include "optFlow2RGB.h"
 
 #include "tweet.h"
 #include "webclient.h"
@@ -63,51 +64,21 @@ int main(void)
         cv::Mat flow = flow_tmp.clone();
         opt_flow_mtx.unlock();
 
-        cv::Mat flowXY[2];
-        split(flow, flowXY);
-
-        // オプティカルフローの可視化（色符号化）
-        //  オプティカルフローを極座標に変換（角度は[deg]）
-        cv::Mat magnitude, angle;
-        cv::cartToPolar(flowXY[0], flowXY[1], magnitude, angle, true);
-
-        double maxVal;
-        cv::minMaxLoc(magnitude, NULL, &maxVal, NULL, NULL);
-        // std::cout << maxVal << "\n";
-        //  色相（H）はオプティカルフローの角度
-        //  彩度（S）は0～1に正規化したオプティカルフローの大きさ
-        //  明度（V）は1
-        cv::Mat hsvPlanes[3];
-        hsvPlanes[0] = angle;
-        if(maxVal > 10){
-            cv::normalize(magnitude, hsvPlanes[2], 0, 1, cv::NORM_MINMAX); // 正規化
-        } else {
-            hsvPlanes[2] = cv::Mat::zeros(magnitude.size(), CV_32F);
-        }
-
-        hsvPlanes[1] = cv::Mat::ones(magnitude.size(), CV_32F);
-
-        //  HSVを合成して一枚の画像にする
-        cv::Mat hsv;
-        merge(hsvPlanes, 3, hsv);
-
-        //  HSVからBGRに変換
-        cv::Mat flowBgr;
-        cvtColor(hsv, flowBgr, cv::COLOR_HSV2BGR);
+        cv::Mat flow_rgb;
+        optFlow2RGB( flow, flow_rgb );
 
         // 表示
-        cv::imshow("optical flow", flowBgr);
+        cv::imshow("optical flow", flow_rgb);
 
         // グレースケール
         cv::Mat gray, bin;
-        cv::cvtColor( flowBgr, gray, CV_BGR2GRAY);
-        cv::minMaxLoc(flowBgr, NULL, &maxVal, NULL, NULL);
+        cv::cvtColor( flow_rgb, gray, CV_BGR2GRAY);
 
         // 平滑化
         blur( gray, gray, cv::Size(3,3) );
         cv::imshow("gray", gray);
 
-        // cv::threshold(cv::Mat1b(gray*255), bin, 0.0, 255.0, CV_THRESH_BINARY | CV_THRESH_OTSU);
+        // 二値化
         cv::threshold(cv::Mat1b(gray*255), bin, 10, 255.0, CV_THRESH_BINARY);
         cv::imshow("bin", bin);
 
@@ -116,12 +87,9 @@ int main(void)
 
         //輪郭取得
         cv::findContours(bin, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-        //cv::findContours(bin, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
         // 検出された輪郭線を緑で描画
         for (auto contour = contours.begin(); contour != contours.end(); contour++){
-            // cv::polylines(prev, *contour, true, cv::Scalar(0, 255, 0), 2);
-
             //輪郭を直線近似する
             std::vector< cv::Point > approx;
             cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);

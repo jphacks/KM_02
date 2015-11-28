@@ -14,5 +14,6 @@ int main(void)
     std::string filename("../../skeleton.png");
     cv::Mat src = cv::imread(filename);
 
-    return ( tc.tweet(message, src) ) ? 0 : 1;
+    //return ( tc.tweet(message, src) ) ? 0 : 1;
+    return 0;
 }

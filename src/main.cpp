@@ -13,7 +13,7 @@
 
 #include "sequentialCalcOptFlow.h"
 #include "sequentialCaptCurrBuffer.h"
-#include "optFlow2RGB.h"
+#include "detectMotionObject.h"
 
 #include "tweet.h"
 #include "webclient.h"
@@ -64,49 +64,8 @@ int main(void)
         cv::Mat flow = flow_tmp.clone();
         opt_flow_mtx.unlock();
 
-        cv::Mat flow_rgb;
-        optFlow2RGB( flow, flow_rgb );
-
-        // 表示
-        cv::imshow("optical flow", flow_rgb);
-
-        // グレースケール
-        cv::Mat gray, bin;
-        cv::cvtColor( flow_rgb, gray, CV_BGR2GRAY);
-
-        // 平滑化
-        blur( gray, gray, cv::Size(3,3) );
-        cv::imshow("gray", gray);
-
-        // 二値化
-        cv::threshold(cv::Mat1b(gray*255), bin, 10, 255.0, CV_THRESH_BINARY);
-        cv::imshow("bin", bin);
-
-        //輪郭の座標リスト
-        std::vector< std::vector< cv::Point > > contours;
-
-        //輪郭取得
-        cv::findContours(bin, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-
-        // 検出された輪郭線を緑で描画
-        for (auto contour = contours.begin(); contour != contours.end(); contour++){
-            //輪郭を直線近似する
-            std::vector< cv::Point > approx;
-            cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);
-            // 近似の面積が一定以上なら取得
-            double area = cv::contourArea(approx);
-
-            if (area > 1000.0){
-                cv::Rect brect = cv::boundingRect(cv::Mat(approx).reshape(2));
-
-                // 外接矩形を描画
-                cv::rectangle(curr, brect.tl(), brect.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
-                // cv::polylines(curr, *contour, true, cv::Scalar(0, 255, 0), 2);
-            }
-        }
-
-        //全体を表示する場合
-        cv::imshow("coun", curr);
+        vector<cv::Rect> detected_obj;
+        detectMotionObject(curr, flow, detected_obj);
     }
 
     // スレッドの終了

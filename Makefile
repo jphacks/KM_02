@@ -5,18 +5,6 @@
 # target
 TARGET = $(shell basename `pwd`)
 
-OS = $(shell uname)
-ifeq ($(OS), Linux)
-	A = hoge1
-else ifeq ($(OS), Darwin)
-	A = hoge2
-else ifeq ($(OS), MINGW64_NT-6.1)
-	A = hoge3
-endif
-
-default:
-	@echo $(A)
-
 # directory
 OUT_DIR = build
 SRC_DIR = src
@@ -31,9 +19,32 @@ OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.o))
 DEPS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.d))
 
 # compiler
-CXX = g++ -std=c++14
+CXX = g++ -std=c++11
 CXXFLAGS = -I./$(HEADER_DIR)
 LDFLAGS  = `pkg-config --libs libssl` `pkg-config --libs oauth` -liconv
+
+OPENCV_INC = `pkg-config --cflags opencv`
+OPENCV_LIB = `pkg-config --libs opencv`
+OPENSSL_LIB = `pkg-config --libs libssl`
+ICONV_LIB = -liconv
+OS = $(shell uname)
+ifeq ($(OS), Linux)
+	ICONV_LIB = -liconv_hook
+else ifeq ($(OS), Darwin)
+	OPENSSL_LIB = `pkg-config --libs openssl`
+else ifeq ($(OS), MINGW64_NT-6.1)
+	CXX = g++ -std=c++14
+	OPENCV_INC = `pkg-config --cflags opencv_static`
+	OPENCV_LIB = `pkg-config --libs opencv_static`
+endif
+
+default:
+	@echo $(OS)
+	@echo $(CXX)
+	@echo $(OPENCV_INC)
+	@echo $(OPENCV_LIB)
+	@echo $(OPENSSL_LIB)
+	@echo $(ICONV_LIB)
 
 # dummy target
 .PHONY : release debug all clean
@@ -41,8 +52,8 @@ LDFLAGS  = `pkg-config --libs libssl` `pkg-config --libs oauth` -liconv
 # release
 release: CXX += -O2
 # release: STATICFLAG = -static
-release: CXXFLAGS = -I./$(HEADER_DIR) `pkg-config --cflags opencv_static` `pkg-config --cflags jsoncpp`
-release: LDFLAGS  = `pkg-config --libs opencv_static` `pkg-config --libs libssl` `pkg-config --libs oauth` `pkg-config --libs jsoncpp` -liconv
+release: CXXFLAGS = -I./$(HEADER_DIR) $(OPENCV_INC) `pkg-config --cflags jsoncpp`
+release: LDFLAGS  = $(OPENCV_LIB) $(OPENSSL_LIB) `pkg-config --libs oauth` `pkg-config --libs jsoncpp` $(ICONV_LIB)
 release: all
 
 # debug

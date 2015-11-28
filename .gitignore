@@ -1,6 +1,6 @@
 build/
-include/KazuSoap_key.h
-test/libtwicpps++.a
+include/jphacks_key.h
+libtwicppspp.a
 .clang_complete
 GPATH
 GRTAGS

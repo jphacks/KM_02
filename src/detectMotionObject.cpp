@@ -17,24 +17,14 @@ using namespace std;
 //***********************************************************************
 // Function : detectMotionObject |
 //***********************************************************************
-void detectMotionObject( cv::Mat& curr, cv::Mat& flow32FC2, std::vector<cv::Rect> detected_obj ){
-    // optical flow to RGB
-    cv::Mat flow_rgb;
-    optFlow2RGB( flow32FC2, flow_rgb );
-
-    // 表示
-    cv::imshow("optical flow", flow_rgb);
-
-    // グレースケール
-    cv::Mat gray, bin;
-    cv::cvtColor( flow_rgb, gray, CV_BGR2GRAY);
-
+void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect> detected_obj ){
     // 平滑化
     blur( gray, gray, cv::Size(3,3) );
     cv::imshow("gray", gray);
 
     // 二値化
-    cv::threshold(cv::Mat1b(gray*255), bin, 10, 255.0, CV_THRESH_BINARY);
+    cv::Mat bin;
+    cv::threshold((gray.type() == CV_32FC1) ? cv::Mat1b(gray*255): gray, bin, 10, 255.0, CV_THRESH_BINARY);
     cv::imshow("bin", bin);
 
     //輪郭の座標リスト
@@ -45,15 +35,16 @@ void detectMotionObject( cv::Mat& curr, cv::Mat& flow32FC2, std::vector<cv::Rect
 
     cv::Mat curr_disp = curr.clone();
     for (auto contour = contours.begin(); contour != contours.end(); contour++){
-        //輪郭を直線近似する
+        // 輪郭を直線近似する
         std::vector< cv::Point > approx;
         cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);
         // 近似の面積が一定以上なら取得
         double area = cv::contourArea(approx);
+        // double area = cv::contourArea(*contour);
 
         if (area > 1000.0){
             // 検出された輪郭線を緑で描画
-            // cv::polylines(curr, *contour, true, cv::Scalar(0, 255, 0), 2);
+            cv::polylines(curr_disp, *contour, true, cv::Scalar(0, 255, 0), 2);
 
             // 外接矩形を描画
             detected_obj.push_back( cv::boundingRect(cv::Mat(approx).reshape(2)) );

@@ -2,6 +2,9 @@
 #include <oauth.h>
 #include <opencv2/opencv.hpp>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/superres/optical_flow.hpp>
+
 #include "tweet.h"
 #include "webclient.h"
 // #include "mykey.h"
@@ -9,8 +12,11 @@
 
 int main(void)
 {
-		WebClient::initialize();
-		TwitterClient tc(c_key, c_sec, t_key, t_sec);
+    // buffering off for debug on pty
+    setvbuf( stdout, NULL, _IONBF, BUFSIZ );
+
+    WebClient::initialize();
+    TwitterClient tc(c_key, c_sec, t_key, t_sec);
     std::string filename("../../skeleton.png");
     cv::Mat src = cv::imread(filename);
 

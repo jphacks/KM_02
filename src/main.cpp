@@ -14,6 +14,7 @@
 #include "sequentialCaptCurrBuffer.h"
 #include "sequentialCalcDiffImg.h"
 #include "sequentialCalcOptFlow.h"
+#include "optFlow2RGB.h"
 #include "detectMotionObject.h"
 
 #include "tweet.h"
@@ -88,8 +89,17 @@ int main(void)
         // cv::Mat gray;
         // cv::cvtColor( flow_rgb, gray, CV_BGR2GRAY);
 
-        vector<cv::Rect> detected_obj;
-        detectMotionObject(curr, diff, detected_obj);
+        vector<cv::Rect> detected_obj_diff, detected_obj_optflow;
+        detectMotionObject(curr, diff, detected_obj_diff);
+        // detectMotionObject(curr, gray, detected_obj_optflow);
+
+        for(auto i: detected_obj_diff){
+            cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
+        }
+        // for(auto i: detected_obj_optflow){
+        //     cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(0, 255, 0), 2, CV_AA);
+        // }
+        cv::imshow("dist", curr);
     }
 
     // スレッドの終了

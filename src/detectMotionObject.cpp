@@ -17,15 +17,15 @@ using namespace std;
 //***********************************************************************
 // Function : detectMotionObject |
 //***********************************************************************
-void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect> detected_obj ){
+void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect>& detected_obj ){
     // 平滑化
     blur( gray, gray, cv::Size(3,3) );
-    cv::imshow("gray", gray);
+    // cv::imshow("gray", gray);
 
     // 二値化
     cv::Mat bin;
     cv::threshold((gray.type() == CV_32FC1) ? cv::Mat1b(gray*255): gray, bin, 10, 255.0, CV_THRESH_BINARY);
-    cv::imshow("bin", bin);
+    // cv::imshow("bin", bin);
 
     //輪郭の座標リスト
     std::vector<std::vector<cv::Point>> contours;
@@ -34,24 +34,23 @@ void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect> det
     cv::findContours(bin, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
     cv::Mat curr_disp = curr.clone();
-    for (auto contour = contours.begin(); contour != contours.end(); contour++){
+    for (auto contour: contours){
         // 輪郭を直線近似する
         std::vector< cv::Point > approx;
-        cv::approxPolyDP(cv::Mat(*contour), approx, 0.01 * cv::arcLength(*contour, true), true);
+        cv::approxPolyDP(cv::Mat(contour), approx, 0.01 * cv::arcLength(contour, true), true);
         // 近似の面積が一定以上なら取得
         double area = cv::contourArea(approx);
-        // double area = cv::contourArea(*contour);
 
         if (area > 1000.0){
             // 検出された輪郭線を緑で描画
-            cv::polylines(curr_disp, *contour, true, cv::Scalar(0, 255, 0), 2);
+            // cv::polylines(curr_disp, *contour, true, cv::Scalar(0, 255, 0), 2);
 
             // 外接矩形を描画
             detected_obj.push_back( cv::boundingRect(cv::Mat(approx).reshape(2)) );
-            cv::rectangle(curr_disp, detected_obj.back().tl(), detected_obj.back().br(), cv::Scalar(255, 0, 0), 2, CV_AA);
+            // cv::rectangle(curr_disp, detected_obj.back().tl(), detected_obj.back().br(), cv::Scalar(255, 0, 0), 2, CV_AA);
         }
     }
 
     //全体を表示する場合
-    cv::imshow("coun", curr_disp);
+    // cv::imshow("coun", curr_disp);
 }

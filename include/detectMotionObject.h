@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------
 // function prototype
 //-----------------------------------------------------------------------
-void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect> detected_obj );
+void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect>& detected_obj );
 
 //-----------------------------------------------------------------------
 #endif // INCLUDE_DETECTMOTIONOBJECT_H

@@ -46,7 +46,7 @@ int main(void)
     cv::Mat curr_tmp;
     bool break_flag = false;
     thread cap_th( sequentialCaptCurrBuffer, ref(curr_tmp), ref(break_flag));
-    while( curr_tmp.empty() ){
+		while( curr_tmp.empty() ){
         sleep(0);
     }
 

@@ -18,8 +18,9 @@ SRCS = $(notdir $(wildcard $(SRC_DIR)/*.cpp))
 OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.o))
 DEPS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.d))
 
+
 # compiler
-CXX = g++ -std=c++11
+CXX = g++ -std=c++11 
 CXXFLAGS = -I./$(HEADER_DIR)
 LDFLAGS  = `pkg-config --libs libssl` `pkg-config --libs oauth` -liconv
 
@@ -31,6 +32,7 @@ OS = $(shell uname)
 ifeq ($(OS), Linux)
 	ICONV_LIB = -liconv_hook
 else ifeq ($(OS), Darwin)
+	CXX = clang++ -std=c++11 -stdlib=libc++
 	OPENSSL_LIB = `pkg-config --libs openssl`
 else ifeq ($(OS), MINGW64_NT-6.1)
 	CXX = g++ -std=c++14

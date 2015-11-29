@@ -16,16 +16,24 @@
 ## 開発技術
 ### 活用した技術
 #### API・データ
-* 
-* 
+* [Twitter API](https://dev.twitter.com) 
+ 
 
 #### フレームワーク・ライブラリ・モジュール
-* 
-* 
+
+* [twicppspp](https://github.com/KazuSoap/twicppspp.git) 
+
+* [OpenCV](https://dev.twitter.com)
+
+* [Openssl](https://www.openssl.org)
+
+* [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
+
+* [libiconv](https://www.gnu.org/software/libiconv/)
 
 #### デバイス
-* 
-* 
+* webカメラ
+
 
 ### 独自技術
 #### ハッカソンで開発した独自機能・技術

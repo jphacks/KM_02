@@ -96,22 +96,27 @@ int main(void)
         detectMotionObject(curr, diff, detected_obj_diff);
         // detectMotionObject(curr, gray, detected_obj_optflow);
 
-        string filename = "./data_set/object2.xml";
+        string filename = "./data_set/object1.xml";
         cv::FileStorage fs1(filename, cv::FileStorage::READ);
-        int width_min, width_max,width;
+        int width_min, width_max,height_min, height_max;
+        int width, height;
         string text;
 
         fs1["width_min"] >> width_min;
         fs1["width_max"] >> width_max;
+        fs1["height_min"] >> height_min;
+        fs1["height_max"] >> height_max;
         fs1["text"] >> text;
 
         int esc_key = 0;
         for(auto i: detected_obj_diff){
             cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
             width = i.br().x - i.tl().x;
+            height = i.br().y - i.tl().y;
             cout << "width :" << width << endl;
-            if((width_min < width) && (width < width_max)){
-              enable_count++;
+            cout << "height :" << height << endl;
+            if((width_min < width) && (width < width_max) && (height_min < height) && (height < height_max)){
+           //   enable_count++;
             }else{
               enable_count = 0;
             }

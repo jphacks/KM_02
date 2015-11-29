@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!-- Object1の判定条件-->
 <opencv_storage>
-  <width_min>20</width_min>
-  <width_max>100</width_max>
-  <height_min></height_min>
-  <height_max></height_max>
+  <width_min>100</width_min>
+  <width_max>120</width_max>
+  <height_min>300</height_min>
+  <height_max>350</height_max>
   <text>"Object1 is detected"</text>
 </opencv_storage>

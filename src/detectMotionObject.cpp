@@ -84,12 +84,12 @@ void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect>& de
                     i |= j;
                 } else if( contain == 2){
                     if( rect_tmp.width > rect_tmp.height ){
-                        if( 10 < rect_tmp.width - (i.width + j.width)/2 ){
+                        if( 10 > rect_tmp.width - (i.width + j.width)/2 ){
                             i |= j;
                             j = cv::Rect();
                         }
                     } else {
-                        if( 10 < rect_tmp.height - (i.height + j.height)/2 ){
+                        if( 10 > rect_tmp.height - (i.height + j.height)/2 ){
                             i |= j;
                             j = cv::Rect();
                         }

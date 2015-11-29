@@ -20,7 +20,7 @@ DEPS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.d))
 
 
 # compiler
-CXX = g++ -std=c++11 
+CXX = g++ -std=c++11
 CXXFLAGS = -I./$(HEADER_DIR)
 LDFLAGS  = `pkg-config --libs libssl` `pkg-config --libs oauth` -liconv
 

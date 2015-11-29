@@ -46,8 +46,8 @@ void sequentialCalcDiffImg(cv::Mat& curr, cv::Mat& diff, bool& break_flag){
         blur( gray_curr, gray_curr, cv::Size(3,3) ); // 平滑化
 
         // 画像差分の選出
-        cv::Mat gray_diff1 = gray_prev - gray_curr;
-        cv::Mat gray_diff2 = gray_save - gray_curr - cv::Mat1b::ones(gray_curr.size())*30;
+        cv::Mat gray_diff1 = gray_prev - gray_curr - cv::Mat1b::ones(gray_curr.size())*20;
+        cv::Mat gray_diff2 = gray_save - gray_curr - cv::Mat1b::ones(gray_curr.size())*20;
 
         double maxVal1, maxVal2;
         cv::minMaxLoc( gray_diff1, NULL, &maxVal1, NULL, NULL );
@@ -58,9 +58,9 @@ void sequentialCalcDiffImg(cv::Mat& curr, cv::Mat& diff, bool& break_flag){
             continue;
         }
 
-        cv::normalize( gray_diff2, diff_normal1, 0, 255, cv::NORM_MINMAX); // 正規化
-        cv::normalize( gray_diff1, diff_normal2, 0, 255, cv::NORM_MINMAX); // 正規化
-        cv::Mat diff_normal = diff_normal1 + diff_normal2;
+        cv::normalize( gray_diff1, diff_normal1, 0, 255, cv::NORM_MINMAX); // 正規化
+        cv::normalize( gray_diff2, diff_normal2, 0, 255, cv::NORM_MINMAX); // 正規化
+        cv::Mat diff_normal = diff_normal1*10 + diff_normal2;
 
         diff_mtx.lock();
         diff = diff_normal.clone();

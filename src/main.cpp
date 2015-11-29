@@ -41,6 +41,7 @@ int main(void)
     // current frame の連続取得(別スレッド)
     cv::Mat curr_tmp;
     bool break_flag = false;
+    std::chrono::milliseconds ms(250);
     cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
@@ -49,7 +50,6 @@ int main(void)
     string message;   //twitter投稿用
 
     while( curr_tmp.empty() ){
-        std::chrono::milliseconds ms(250);
         std::this_thread::sleep_for(ms);
     }
 
@@ -57,7 +57,6 @@ int main(void)
     cv::Mat diff_tmp;
     thread diff_th( sequentialCalcDiffImg, ref(curr_tmp), ref(diff_tmp), ref(break_flag));
     while( diff_tmp.empty() ){
-        std::chrono::milliseconds ms(250);
         std::this_thread::sleep_for(ms);
     }
 
@@ -65,7 +64,7 @@ int main(void)
     // cv::Mat flow_tmp;
     // thread optflow_th( sequentialCalcOptFlow, ref(curr_tmp), ref(flow_tmp), ref(break_flag));
     // while( flow_tmp.empty() ){
-    //     sleep(0);
+    //     std::this_thread::sleep_for(ms);
     // }
     while(1) {
         cap_mtx.lock();

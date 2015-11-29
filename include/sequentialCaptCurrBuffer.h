@@ -16,8 +16,9 @@ extern std::mutex cap_mtx;
 //-----------------------------------------------------------------------
 // function prototype
 //-----------------------------------------------------------------------
-void sequentialCaptCurrBuffer(cv::Mat& curr_buffer,
-                              bool& canceled);
+void sequentialCaptCurrBuffer(cv::VideoCapture& cap,
+                              cv::Mat& curr,
+                              bool& break_flag);
 
 //-----------------------------------------------------------------------
 #endif // INCLUDE_SEQUENTIALCAPTCURRBUFFER_H

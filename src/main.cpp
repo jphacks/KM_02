@@ -46,7 +46,8 @@ int main(void)
     // current frame の連続取得(別スレッド)
     cv::Mat curr_tmp;
     bool break_flag = false;
-    thread cap_th( sequentialCaptCurrBuffer, ref(curr_tmp), ref(break_flag));
+    cv::VideoCapture cap(0);
+    thread cap_th( sequentialCaptCurrBuffer, ref(cap), ref(curr_tmp), ref(break_flag));
     while( curr_tmp.empty() ){
         std::chrono::milliseconds ms(250);
         std::this_thread::sleep_for(ms);

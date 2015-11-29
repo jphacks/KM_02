@@ -22,15 +22,17 @@ using namespace std;
 // Function : sequentialCaptCurrBuffer |
 //***********************************************************************
 void sequentialCaptCurrBuffer(cv::Mat& curr, bool& break_flag){
-    cv::VideoCapture cap(0);
-    if(!cap.isOpened()){
-        break_flag = true;
+		cv::VideoCapture cap(0);
+		if(!cap.isOpened()){
+			break_flag = true;
     }
 
     while( !break_flag ){
-        // 現フレームを取得
+			// 現フレームを取得
         cv::Mat curr_tmp;
         cap >> curr_tmp;
+
+				cout << curr_tmp << endl;
 
         cap_mtx.lock();
         cv::swap( curr, curr_tmp);

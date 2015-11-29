@@ -46,21 +46,24 @@ void sequentialCalcDiffImg(cv::Mat& curr, cv::Mat& diff, bool& break_flag){
         blur( gray_curr, gray_curr, cv::Size(3,3) ); // 平滑化
 
         // 画像差分の選出
-        cv::Mat gray_diff1 = gray_prev - gray_curr - cv::Mat1b::ones(gray_curr.size())*20;
-        cv::Mat gray_diff2 = gray_save - gray_curr - cv::Mat1b::ones(gray_curr.size())*20;
+        cv::Mat gray_diff1 = gray_prev - gray_curr - cv::Mat1b::ones(gray_curr.size())*10;
+        cv::Mat gray_diff2 = gray_save - gray_curr - cv::Mat1b::ones(gray_curr.size())*30;
 
         double maxVal1, maxVal2;
         cv::minMaxLoc( gray_diff1, NULL, &maxVal1, NULL, NULL );
-        cv::minMaxLoc( gray_diff1, NULL, &maxVal2, NULL, NULL );
+        cv::minMaxLoc( gray_diff2, NULL, &maxVal2, NULL, NULL );
 
-        cv::Mat diff_normal1, diff_normal2;
-        if(maxVal1 < 50 || maxVal2 < 50){ // 動体なし
+        cv::Mat diff_normal1, diff_normal2, diff_normal;
+        if( maxVal1 > 20 && maxVal2 > 50){
+            cv::normalize( gray_diff1, diff_normal1, 0, 255, cv::NORM_MINMAX); // 正規化
+            cv::normalize( gray_diff2, diff_normal2, 0, 255, cv::NORM_MINMAX); // 正規化
+            diff_normal = diff_normal1*10 + diff_normal2;
+        } else if( maxVal1 > 20 && maxVal2 <= 50 ){
+            diff_normal = cv::Mat1b::zeros(gray_curr.size());
+        } else {
+            cv::swap(gray_prev, gray_curr);
             continue;
         }
-
-        cv::normalize( gray_diff1, diff_normal1, 0, 255, cv::NORM_MINMAX); // 正規化
-        cv::normalize( gray_diff2, diff_normal2, 0, 255, cv::NORM_MINMAX); // 正規化
-        cv::Mat diff_normal = diff_normal1*10 + diff_normal2;
 
         diff_mtx.lock();
         diff = diff_normal.clone();

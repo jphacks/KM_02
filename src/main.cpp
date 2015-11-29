@@ -66,6 +66,7 @@ int main(void)
     // while( flow_tmp.empty() ){
     //     std::this_thread::sleep_for(ms);
     // }
+    int enable_count = 0;
     while(1) {
         cap_mtx.lock();
         cv::Mat curr = curr_tmp.clone();
@@ -104,7 +105,6 @@ int main(void)
         fs1["width_max"] >> width_max;
         fs1["text"] >> text;
 
-        int enable_count = 0;
         int esc_key = 0;
         for(auto i: detected_obj_diff){
             cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
@@ -116,13 +116,14 @@ int main(void)
               enable_count = 0;
             }
             if(enable_count == 3){
-              src = curr;
-              message = text;
               cout << "twitterに投稿しますか？"<< endl;
               cout << "する：'s' しない：'s'以外"<<endl;
               int key = cv::waitKey(0);
               if(key == 's'){
+                src = curr;
+                 message = text;
                 esc_key='\x1b';
+              }else{
               }
             }
         }

@@ -38,14 +38,16 @@ int main(void)
     // buffering off for debug on pty
     setvbuf( stdout, NULL, _IONBF, BUFSIZ );
 
-    //aaaaaaaa
     // current frame の連続取得(別スレッド)
     cv::Mat curr_tmp;
     bool break_flag = false;
     cv::VideoCapture cap(0);
-		cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     thread cap_th( sequentialCaptCurrBuffer, ref(cap), ref(curr_tmp), ref(break_flag));
+    cv::Mat src;      //twitter投稿用
+    string message;   //twitter投稿用
+
     while( curr_tmp.empty() ){
         std::chrono::milliseconds ms(250);
         std::this_thread::sleep_for(ms);
@@ -65,8 +67,7 @@ int main(void)
     // while( flow_tmp.empty() ){
     //     sleep(0);
     // }
-
-    while( cv::waitKey(1) != '\x1b' ) {
+    while(1) {
         cap_mtx.lock();
         cv::Mat curr = curr_tmp.clone();
         cap_mtx.unlock();
@@ -95,14 +96,45 @@ int main(void)
         detectMotionObject(curr, diff, detected_obj_diff);
         // detectMotionObject(curr, gray, detected_obj_optflow);
 
+        string filename = "./data_set/object2.xml";
+        cv::FileStorage fs1(filename, cv::FileStorage::READ);
+        int width_min, width_max,width;
+        string text;
+
+        fs1["width_min"] >> width_min;
+        fs1["width_max"] >> width_max;
+        fs1["text"] >> text;
+
+        int enable_count = 0;
+        int esc_key = 0;
         for(auto i: detected_obj_diff){
             cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
-            cout << "i.tl() - i.br() :" << i.tl()  - i.br() << endl;
-			 	}
+            width = i.br().x - i.tl().x;
+            cout << "width :" << width << endl;
+            if((width_min < width) && (width < width_max)){
+              enable_count++;
+            }else{
+              enable_count = 0;
+            }
+            if(enable_count == 3){
+              src = curr;
+              message = text;
+              cout << "twitterに投稿しますか？"<< endl;
+              cout << "する：'s' しない：'s'以外"<<endl;
+              int key = cv::waitKey(0);
+              if(key == 's'){
+                esc_key='\x1b';
+              }
+            }
+        }
         // for(auto i: detected_obj_optflow){
         //     cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(0, 255, 0), 2, CV_AA);
         // }
         cv::imshow("dist", curr);
+        int key = cv::waitKey(30);
+        if((esc_key == '\x1b') || (key == '\x1b')){
+          break;
+        }
     }
 
     // スレッドの終了
@@ -110,11 +142,11 @@ int main(void)
     cap_th.join();
     diff_th.join();
     // optflow_th.join();
-    
-		WebClient::initialize();
-    TwitterClient tc(c_key, c_sec, t_key, t_sec);
-    cv::Mat src = diff;
 
-    //return ( tc.tweet(message, src) ) ? 0 : 1;
-    return 0;
+    WebClient::initialize();
+    TwitterClient tc(c_key, c_sec, t_key, t_sec);
+    //cv::Mat src = diff;
+
+    return ( tc.tweet(message, src) ) ? 0 : 1;
+    //return 0;
 }

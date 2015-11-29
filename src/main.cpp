@@ -38,11 +38,7 @@ int main(void)
     // buffering off for debug on pty
     setvbuf( stdout, NULL, _IONBF, BUFSIZ );
 
-    WebClient::initialize();
-    TwitterClient tc(c_key, c_sec, t_key, t_sec);
-    std::string filename("../../skeleton.png");
-    cv::Mat src = cv::imread(filename);
-
+    //aaaaaaaa
     // current frame の連続取得(別スレッド)
     cv::Mat curr_tmp;
     bool break_flag = false;
@@ -101,7 +97,8 @@ int main(void)
 
         for(auto i: detected_obj_diff){
             cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(255, 0, 0), 2, CV_AA);
-        }
+            cout << "i.tl() - i.br() :" << i.tl()  - i.br() << endl;
+			 	}
         // for(auto i: detected_obj_optflow){
         //     cv::rectangle(curr, i.tl(), i.br(), cv::Scalar(0, 255, 0), 2, CV_AA);
         // }
@@ -113,6 +110,10 @@ int main(void)
     cap_th.join();
     diff_th.join();
     // optflow_th.join();
+    
+		WebClient::initialize();
+    TwitterClient tc(c_key, c_sec, t_key, t_sec);
+    cv::Mat src = diff;
 
     //return ( tc.tweet(message, src) ) ? 0 : 1;
     return 0;

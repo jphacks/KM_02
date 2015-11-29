@@ -6,6 +6,7 @@
 #include <oauth.h>
 #include <thread>
 #include <mutex>
+#include <chrono>
 #include <unistd.h>
 
 #include <opencv2/opencv.hpp>
@@ -47,14 +48,16 @@ int main(void)
     bool break_flag = false;
     thread cap_th( sequentialCaptCurrBuffer, ref(curr_tmp), ref(break_flag));
     while( curr_tmp.empty() ){
-        sleep(0);
+        std::chrono::milliseconds ms(250);
+        std::this_thread::sleep_for(ms);
     }
 
     // 画像差分の連続算出(別スレッド)
     cv::Mat diff_tmp;
     thread diff_th( sequentialCalcDiffImg, ref(curr_tmp), ref(diff_tmp), ref(break_flag));
     while( diff_tmp.empty() ){
-        sleep(0);
+        std::chrono::milliseconds ms(250);
+        std::this_thread::sleep_for(ms);
     }
 
     // // optical flow の連続算出(別スレッド)

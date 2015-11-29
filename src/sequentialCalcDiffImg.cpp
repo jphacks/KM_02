@@ -3,7 +3,9 @@
 // include files
 //-----------------------------------------------------------------------
 #include <iostream>
+#include <thread>
 #include <mutex>
+#include <chrono>
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
 #include "sequentialCaptCurrBuffer.h"
@@ -25,6 +27,9 @@ using namespace std;
 // Function : sequentialCalcDiffImg |
 //***********************************************************************
 void sequentialCalcDiffImg(cv::Mat& curr, cv::Mat& diff, bool& break_flag){
+    std::chrono::milliseconds ms(250);
+    std::this_thread::sleep_for(ms);
+
     cv::Mat gray_prev;
     cap_mtx.lock();
     cv::cvtColor( curr.clone(), gray_prev, CV_BGR2GRAY); // グレースケール

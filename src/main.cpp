@@ -116,7 +116,7 @@ int main(void)
             cout << "width :" << width << endl;
             cout << "height :" << height << endl;
             if((width_min < width) && (width < width_max) && (height_min < height) && (height < height_max)){
-           //   enable_count++;
+            enable_count++;
             }else{
               enable_count = 0;
             }

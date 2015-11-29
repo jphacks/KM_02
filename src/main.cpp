@@ -47,6 +47,8 @@ int main(void)
     cv::Mat curr_tmp;
     bool break_flag = false;
     cv::VideoCapture cap(0);
+		cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     thread cap_th( sequentialCaptCurrBuffer, ref(cap), ref(curr_tmp), ref(break_flag));
     while( curr_tmp.empty() ){
         std::chrono::milliseconds ms(250);

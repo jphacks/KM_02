@@ -53,7 +53,6 @@ void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect>& de
     }
 
     // 近接する矩形同士をマージ
-//    cout << detected_obj_tmp.size() << ", ";
     if( detected_obj_tmp.size() > 1 ){
         for(auto& i: detected_obj_tmp){
             if(i.area() == 0){
@@ -105,7 +104,5 @@ void detectMotionObject( cv::Mat& curr, cv::Mat& gray, std::vector<cv::Rect>& de
         }
     }
 
-//    cout << detected_obj.size() << "| ";
-    //全体を表示する場合
     // cv::imshow("coun", curr_disp);
 }
